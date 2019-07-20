@@ -1,0 +1,86 @@
+{{/*
+  Template for Section block
+
+  @author @regisphilibert
+
+  @context Map
+        - Page [.Page]
+        - String [.string]
+
+  @access public
+
+  @TODO: optimize by using particalCached on func/ParseString
+  @TODO: Allow Forestry FMT field to allow editors to add Screenshot themselves.
+*/}}
+{{ with .block }}
+{{/* Class block--with-screenshot is used to style the potential CTAs when a Screenshot reduce
+  their available space. */}}
+<div class="pt-12 px-4 md:px-12 lg:px-16 xl:px-20 {{ with .block_screenshot }} block--with-screenshot {{ end }}">
+  <div class="max-w-md">
+    <div class="fe-Title fe-Title--2xl mb-4">
+        {{ partial "func/ParseString.html" (dict "Page" $.Page "string" .block_title) }}
+    </div>
+    <div class="md:flex">
+      {{/* Following class conditional to allow introducing a Screenshot in the block
+        which need to be 1/3 of the width and pinned down the block */}}
+      <div class="{{ with .block_screenshot }} md:w-2/3 md:pr-6 {{ end }} pb-12">
+        <div class="fe-user-content fe-user-content--block">
+          {{ range slice "block_copy" "block_copy_2" }}
+            {{ with index $.block . }}
+              {{/* If block_copy is only one line, no <p> tag will be produced. We therefor wrap each copy with a 
+                div using the same margin-bottom as <p> tags. If wrapper includes p tags, margin will gracefully collapse. */}}
+              <div class="mb-4">
+                {{ partial "func/ParseString.html" (dict "Page" $.Page "string" .) | markdownify }}
+              </div>
+            {{ end }}
+          {{ end }}
+          {{ with .block_table }}
+            {{ template "block_table" . }}
+          {{ end }}
+        </div>
+      
+        {{ with .links }}
+          {{ template "block_links" (dict "links" . "Page" $.Page) }}
+        {{ end }}
+      </div>
+      {{/* Following conditional to allow Screenshot mentionned above */}}
+      {{ with .block_screenshot }}
+      <div class="max-w-xs mx-auto md:w-1/3 md:mx-0 md:max-w-full flex items-end">
+        <div>
+          {{ partial "_global/capture" (dict "src" . "alt" "Screeshot for Map Feature") }}
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</div>
+{{ end }}
+  
+
+{{ define "block_table" }}
+  {{ $tables := partialCached "func/GetPage" "tables" "tables" }}
+  {{ with partialCached "func/GetPageResource" (slice $tables .) "tables" . }}
+    {{ .Content }}
+  {{ end }}
+{{ end }}
+
+{{ define "block_links" }}
+  <div class="sm:flex sm:flex-wrap sm:-mx-5 mt-10">
+    {{ $Page := .Page }}
+    {{ range .links }}
+
+      <div class="block__button mb-5 sm:mb-0 sm:px-5">
+        {{/* TODO: Rethink the attribution of "links" to state to generate CTAs. */}}
+        {{ $link := partial "func/ParseString.html" (dict "Page" $Page "string" .link) }}
+        {{ $external := partialCached "func/IsExternalURL" $link $link }}
+        <a 
+          href="{{ $link }}"
+          {{ if $external }} target="_blank" {{ end }}
+          class="fe-Button fe-Button--primary fe-Button--block text-base lg:min-w-cta"
+        >
+          {{ .title }}
+        </a>
+      </div>
+    {{ end }}
+    </div>
+{{ end }}

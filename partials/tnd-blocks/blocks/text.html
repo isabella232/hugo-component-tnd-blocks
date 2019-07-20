@@ -1,0 +1,8 @@
+{{ with .block }}
+  {{ with .copy }}
+  <div class="my-4">
+    {{ . | markdownify }}
+  </div>
+  {{ end }}
+{{ end }}
+

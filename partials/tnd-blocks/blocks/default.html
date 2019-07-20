@@ -1,0 +1,21 @@
+{{/*
+  Default Block
+  The informative block displayed only on local dev with the name of the partial not found.
+
+  @author @regisphilibert
+
+  @context Map
+    - Page (.Page)
+    - Map (.block) 
+  
+  @access public
+
+*/}}
+{{ with .block }}
+  {{ if eq hugo.Environment "development" }}
+  {{ $template := printf "_blocks/%s.html" .layout }}
+  <div style="border:red; padding: 1rem;">
+    No partial found for <em>{{ $template }}</em>
+  </div>
+  {{ end }}
+{{ end }}

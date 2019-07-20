@@ -1,0 +1,50 @@
+{{/*
+  Template for Companies (used on homepage partners)
+
+  @author @regisphilibert
+
+  @context Map
+        - Page [.Page]
+        - Map [.block]
+          - String [.title]
+          - String [.content]
+          - Slice [.companies]
+            ...
+            - String [.title]
+            - String [.logo]
+            - String [.url]
+
+  @access public
+
+*/}}
+{{ with .block }}
+<div class="fe-Section text-center">
+  {{/* NOTE: 
+    Achieve retina: Because not every partner image sports the same ratio, it is rather hard to include a bigger image and enforce a max-width. Because some are rectangles and some are squares a common max-width will make the squarish logo bigger than rectangles ones.
+    The optimal solution is to use SVGs insteadof PNGs with the right ratio and size.
+    Less optimal solution is to manually pass a desired width and height for each partner image. */}}
+
+    <div class="fe-container fe-container--small">
+      {{ with .title }}
+        <div class="fe-Title fe-Title--2xl text-primary-color mb-6">
+          {{ . }}
+        </div>
+      {{ end }}
+      {{ with .content }}
+      <p class="mb-10 md:mb-5 text-lg">
+          {{ . | markdownify }}
+      </p>
+      {{ end }}
+      {{ with .companies }}
+        <div class="flex flex-wrap md:-mx-3">
+          {{ range . }}
+            <a href="{{ .url }}" target="_blank" title="{{ .title }}" class="block px-6 md:px-3 max-w-full w-1/2 md:w-1/4 flex mb-10 md:mb-5 items-center justify-center">
+              <img class="lazyload" data-src="{{ partial "_images/src" .logo }}?auto=format" alt="Logo of {{ .title }}" class="block">
+            </a>
+          {{ end }}
+        </div>
+      {{ end }}
+
+    </div>
+</div>
+{{ end }}

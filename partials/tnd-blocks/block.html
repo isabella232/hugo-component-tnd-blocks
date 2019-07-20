@@ -1,0 +1,11 @@
+{{ $block := . }}
+{{ with .block }}
+  {{ $block = . }}
+{{ end }}
+{{ with $block.layout }}
+  {{ if templates.Exists (printf "partials/tnd-blocks/blocks/%s.html" .) }}
+    {{ partial (printf "tnd-blocks/blocks/%s.html" .) $ }}
+  {{ else }}
+    {{ partial "tnd-blocks/blocks/default.html" $ }}
+  {{ end }}
+{{ end }}

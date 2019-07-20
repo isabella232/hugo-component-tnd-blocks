@@ -1,0 +1,39 @@
+{{/* 
+	Process the DATA of a CMS block
+	
+	@author @regisphilibert
+	
+	@access private
+
+    @context Map (Data object of the block)
+
+    @return Map
+
+	@example - Go Template
+		{{ $data := partial "tnd-blocks/data.html" $block }}
+
+  TODO:
+    - [ ] Find some shared data process among blocks and inculde here.
+ */}}
+
+{{ $data := . }}
+{{ $blocks := partialCached "func/GetPage" "blocks" "blocks" }}
+{{ with .universal_block }}
+    {{ $bespoke := $data }}
+    {{ $universal := false }}
+    {{ with partialCached "func/GetPageResource" (slice $blocks .) . }}
+        {{ $universal := . }}
+        {{ with .Params.data_process }}
+            {{ if templates.Exists (printf "partials/tnd-blocks/data/%s.html" .) }}
+                {{ $data = partial (printf "tnd-blocks/data/%s.html" .) (dict "bespoke" $bespoke "universal" $universal) }}
+            {{ else }}
+                {{ $data = partial "tnd-blocks/data/default.html" (dict "bespoke" $bespoke "universal" $universal) }}
+            {{ end }}
+        {{ else }}
+            {{ $data = partial "tnd-blocks/data/default.html" (dict "bespoke" $bespoke "universal" $universal) }}
+        {{ end }}
+    {{ else }}
+        
+    {{ end }}
+{{ end }}
+{{ return $data }}

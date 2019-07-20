@@ -1,0 +1,3 @@
+{{/* This is no deep merge... */}}
+{{ $data := partial "func/Merge.html" (slice .universal.Params .bespoke) }}
+{{ return $data }}
