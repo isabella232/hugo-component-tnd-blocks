@@ -1,0 +1,46 @@
+{{/*
+  GetPartial
+
+  @author @regisphilibert
+
+  @context Map
+    - String (.base)
+      optional
+    - String (.variant)
+
+  @access private
+
+  @return String
+    The verified partial path
+
+  @example - Go Template
+    {{ $partial := partialCached "tnd-blocks/func/GetPartial" (dict "base" $base_layout "variant" $variant_layout) $base_layout $variant_layout }}
+
+  @TODO: Avoid having to test template twice when variant is set. We should test with variant and only if not found, test with base.
+*/}}
+
+{{ $final_layout := "default" }}
+{{ $tests := slice }}
+{{ with .base }}
+  {{ $base_layout := . }}
+  {{/* We add it to the list of our future template.Exists tests  */}}
+  {{ $tests = $tests | append $base_layout }}
+  {{ with $.variant }}
+    {{/* We should make sure we're dealing with a string */}}
+    {{ if or (reflect.IsSlice .) (reflect.IsMap .) }}
+      {{ errorf "Variant value for %s should be a string. Slice or Map given." $base_layout  }}
+    {{ end }}
+    {{/* We add it to the list of our future template.Exists tests  */}}
+    {{ $variant_layout := . }}
+    {{ $tests = $tests | append (printf "%s--%s" $base_layout $variant_layout) }}
+  {{ end }}
+{{ end }}
+
+{{/* We run the tests, final success wins */}}
+{{ range $tests }}
+  {{ if templates.Exists (printf "partials/tnd-blocks/blocks/%s.html" .) }}
+    {{ $final_layout = . }}
+  {{ end }}
+{{ end }}
+
+{{ return (printf "tnd-blocks/blocks/%s.html" $final_layout) }}

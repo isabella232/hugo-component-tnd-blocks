@@ -1,11 +1,42 @@
+{{/*
+  Block
+  This is responsible for fetching the block's markup.
+
+  @author @regisphilibert
+
+  @context Map 
+          - Map (.block)
+          - Page (.Page)
+          optional
+          - String (.variant)
+
+  @access public
+
+  @example - Go Template
+    {{ partial "tnd-blocks/block" (dict "block" . "Page" $ "variant" $variant) }}
+*/}}
+
+{{/* For convenience, we can let programmers simple pass the block's data as context shall they not need the Page. 
+  The following checks if a `.block` exist, if not, it means the blocks data sits at the root.
+*/}}
+
 {{ $block := . }}
 {{ with .block }}
   {{ $block = . }}
 {{ end }}
+
+{{/* Because we'll use the following as partialCached variants, we need them as string. (empty string fails with `with` so we're good)  */}}
+{{ $base_layout := "" }}
+{{ $variant_layout := "" }}
+{{/* This will be used as partialCached variant. Now I'm starting to think those naming are confusing. */}}
+
 {{ with $block.layout }}
-  {{ if templates.Exists (printf "partials/tnd-blocks/blocks/%s.html" .) }}
-    {{ partial (printf "tnd-blocks/blocks/%s.html" .) $ }}
-  {{ else }}
-    {{ partial "tnd-blocks/blocks/default.html" $ }}
-  {{ end }}
+  {{ $base_layout = . }}
 {{ end }}
+{{ with $.variant }}
+  {{ $variant_layout = . }}
+{{ end }}
+
+{{ $partial := partialCached "tnd-blocks/func/GetPartial" (dict "base" $base_layout "variant" $variant_layout) $base_layout $variant_layout }}
+
+{{ partial $partial $ }}
