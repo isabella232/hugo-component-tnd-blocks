@@ -1,0 +1,11 @@
+{{ with .block }}
+<div class="flex">
+    {{ range (seq 2) }}
+      {{ with index $.block (printf "column_%x" .) }}
+        <div class="w-1/2">
+          {{ .copy | markdownify }}
+        </div>
+      {{ end }}
+    {{ end }}
+  </div>
+{{ end }}
