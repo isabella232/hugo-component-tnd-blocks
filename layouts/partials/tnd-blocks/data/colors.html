@@ -1,0 +1,28 @@
+{{/*
+  Return a map of colors classes with index corresponding to FMT field value
+
+  Do overwrite with own map in project!
+
+  @author @regisphilibert
+
+  @context Map
+    - Anything 
+
+  @access public
+
+  @example - Go Template
+    {{ $bgs := partialCached "tnd-blocks/data/colors" . "colors" }}
+    {{ with .background }}
+      {{ with index $bgs . }}
+        {{ $class = printf "bg-%s" . }}
+      {{ end }}
+    {{ end }}
+*/}}
+
+{{ $colors := `
+  'Green': 'green-300'
+  'Orange': 'orange-300'
+  'Blue': 'blue-300'
+` | transform.Unmarshal }}
+
+{{ return $colors }}

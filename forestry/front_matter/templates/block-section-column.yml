@@ -1,0 +1,48 @@
+---
+label: 'Block: Section__column'
+hide_body: true
+display_field: title
+fields:
+- name: title
+  type: text
+  config:
+    required: false
+  label: Title (CMS Only)
+- name: copy
+  type: textarea
+  default: ''
+  config:
+    required: false
+    wysiwyg: true
+    schema:
+      format: markdown
+  label: Copy
+- name: background
+  type: select
+  default: []
+  config:
+    required: false
+    options:
+    - None
+    - Blue
+    - Orange
+    - Green
+    - Image
+    source:
+      type: simple
+      section: 
+      file: 
+      path: 
+  label: Background
+- name: background_image
+  type: file
+  config:
+    maxSize: 250
+  label: Background Image
+  showOnly:
+    field: background
+    value: Image
+- name: background_bleed
+  type: boolean
+  label: Bleed
+  description: Should the background of the column bleed out on the side?

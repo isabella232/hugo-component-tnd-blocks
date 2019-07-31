@@ -1,0 +1,87 @@
+
+{{/*
+  Data function for columns
+  It handles all the heavy duty of finding the right background and widh tailwind class
+  depending on Fields value and number of columns.
+
+  @author @regisphilibert
+
+  @context Map
+          [ .. ]
+            - String (.background)
+            - String (.background_image)
+
+  @access public
+
+  @return Slice
+        [ .. ]
+        - String (.copy)
+        - String (.image)
+        - String (.width) | w-1/2 etc...
+        - String (.bg) | bg-blue-300 etc...
+        - String (.bleed) | left or right
+
+  @example - Go Template
+    See tnd-blocks/blocks/section.html
+*/}}
+{{/* We register the number of columns */}}
+{{ $len := len . }}
+{{ $width := "" }}
+{{ $widths := `
+  '1': 'w-full'
+  '2': 'w-1/2'
+  '3': 'w-1/3'
+  ` | transform.Unmarshal }}
+{{ $bgs := partialCached "tnd-blocks/data/colors" . "colors" }}
+
+{{/* Data shared by all the columns */}}
+
+{{/* We determine the width class from the number of columns */}}
+{{ with index $widths ($len | string) }}
+  {{ $width = . }}
+{{ end }}
+
+{{ $columns := slice }}
+
+{{ range $index, $v := . }}
+
+  {{ $bg := "" }}
+  {{ $copy := "" }}
+  {{ $image := "" }}
+  
+  {{ with .background }}
+    {{ with index $bgs . }}
+    {{ $bg = printf "bg-%s" . }}
+    {{ end }}
+  {{ end }}
+
+  {{ $bleed := false }}
+  {{/* If bleed is on */}}
+  {{ if .background_bleed }}
+    {{/* Bleed will only be applied to first and last columns */}}
+
+    {{/* If this is the first column, bleed is to the left */}}
+    {{ if not $index }}
+      {{ $bleed = "left" }}
+    {{/* Else if this is the last column, bleed is to right */}}
+    {{ else if (eq $index (sub $len 1)) }}
+      {{ $bleed = "right" }}
+    {{ end }}
+  {{ end }}
+  
+  {{/* Basic column data parsing */}}
+  {{ with .copy }}
+    {{ $copy = . }}
+  {{ end }}
+  {{ if eq .background "Image" }}
+    {{ with .background_image }}
+      {{ $image = . }}
+    {{ end }}
+  {{ end }}
+
+  {{/* We add the columns' data to the to-be-returned slice */}}
+  {{ $columns = $columns | append (dict "copy" $copy "image" $image "width" $width "bg" $bg "bleed" $bleed) }}
+{{ end }}
+
+{{/* We return */}}
+{{ return $columns }}

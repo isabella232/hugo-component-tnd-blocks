@@ -1,0 +1,80 @@
+{{/*
+  The Section block!
+
+  @author @regisphilibert
+
+  @context Map
+    - String (.title)
+    - String (.copy)
+    - String (.background)
+    - Bool (.background_bleed)
+    - String (.background_image)
+
+  @access public
+
+  @example - Go Template
+    {{ partial "path" context }}
+    {{ partialCached "path" context "variant" }}
+*/}}
+{{ with .block }}
+  {{ $bgs := partialCached "tnd-blocks/data/colors" . "colors" }}
+  {{ $bg := "" }}
+
+  {{ with .background }}
+    {{ with index $bgs . }}
+    {{ $bg = printf "bg-%s" . }}
+    {{ end }}
+  {{ end }}
+
+  <div class="tnd-block lazyload {{ $bg }}  bg-cover bg-no-repeat bg-center"
+
+  {{ with .background_image }}
+      data-bgset="{{ partial "_components/bg-set-attr" . }}"
+  {{ end }}
+  >
+    {{ with .columns }}
+      {{/* Here we use a data function to process the blocks data (cleaner template files) 
+        See tnd-blocks/data/columns.html for returned data details */}}
+      {{ with partial "tnd-blocks/data/columns" . }}
+        {{/* Following test check if the column is lone, and if so, stores its data in $lone */}}
+        {{ $lone := false }}
+        {{ with index . 0 }}
+          {{ if .lone }}
+            {{ $lone = . }}
+          {{ end }}
+        {{ end }}
+        {{/* If column is lone we hadd its bg class to container V */}}
+
+          <div class="flex max-w-5xl mx-auto">
+            {{ range . }}
+              {{ $col := . }}
+              <div class="{{ .width }} {{ .bg }} py-4 relative min-h-block">
+                {{/* If column has bleed on and is not lone we create a backdrop element */}}
+                {{ with .bleed }}
+                  {{ if not $lone }}
+                    {{/* Bleed position determines the right tailwind position class */}}
+                    {{ $bleed_position := cond (eq . "left") "right-0" "left-0" }}
+                    <div class="absolute lazyload h-full top-0  z-0 bg-cover bg-no-repeat bg-center {{ $col.bg }} {{ $bleed_position }}" 
+                      style="width:50vw"
+                      {{/* If column has background image, we use it on the backdrop element */}}
+                      {{ with $col.image }}
+                        data-bgset="{{ partial "_components/bg-set-attr" . }}"
+                      {{ end }}
+                    >
+                    </div>
+                  {{ end }}
+                {{ end }}
+                <div class="relative z-10">
+                  {{ with .copy }}
+                    {{ . | markdownify }}
+                  {{ end }}
+                </div>
+              </div>
+            {{ end }}
+          </div>
+
+      {{ end }}
+    {{ end }}
+  </div>
+{{ end }}
+

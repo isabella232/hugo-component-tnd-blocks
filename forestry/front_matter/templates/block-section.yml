@@ -1,0 +1,56 @@
+---
+label: 'Block: Section '
+hide_body: true
+display_field: title
+fields:
+- name: base
+  type: include
+  config: {}
+  template: block-base
+  label: Base
+- name: block_title
+  type: text
+  config:
+    required: false
+  label: Title
+  description: The H2 of the block
+- name: background
+  type: select
+  default: []
+  config:
+    required: false
+    options:
+    - Blue
+    - Orange
+    - Green
+    - Image
+    source:
+      type: simple
+      section: 
+      file: 
+      path: 
+  label: Background
+- name: background_image
+  type: file
+  config:
+    maxSize: 250
+  label: Background Image
+  showOnly:
+    field: background
+    value: Image
+- name: columns
+  type: blocks
+  label: Columns
+  template_types:
+  - block-section-column
+  config:
+    min: '1'
+    max: 
+  description: Any number of column can be added.
+- name: layout
+  type: text
+  config:
+    required: false
+  hidden: true
+  label: layout
+  default: section

@@ -85,3 +85,11 @@ Editors can navigate to a page, scroll to the f_Blocks Front Matter field,
 2. Click inside and start editing the bespoke data.
 3. If a universal block must be linked, editor will chose it form the Universal Block list.
 4. Any field filled in the bespoke block will overwrite the data from the universal block it is connected to.
+
+## Available Blocks
+
+### Section
+
+Section block allows to create a section on the page with multiple columm.
+
+Section can have a background (color or image). Each column in turn can also have a background. If "Bleed" is set to true on a column being either the first or the last one, its background will bleed to the edge of the screen.
