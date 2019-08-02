@@ -1,8 +1,8 @@
 {{ with .block }}
-<div class="flex">
+<div class="flex -mx-4">
     {{ range (seq 2) }}
       {{ with index $.block (printf "column_%x" .) }}
-        <div class="w-1/2">
+        <div class="w-1/2 px-4">
           {{ .copy | markdownify }}
         </div>
       {{ end }}
